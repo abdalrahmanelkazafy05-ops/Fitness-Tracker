@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>FitCut Pro</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+h1{
+text-align:center;
+color:#60a5fa;
+margin:20px 0;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+input,
+select{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:8px;
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+.complete-btn{
+width:100%;
+}
+
+.completed{
+background:#15803d !important;
+}
+
+.progress{
+font-size:26px;
+text-align:center;
+color:#22c55e;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,
+td{
+border:1px solid #334155;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#334155;
+}
+
+.result{
+margin-top:15px;
+font-size:18px;
+color:#4ade80;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💪 FitCut Pro</h1>
+
+<div class="progress">
+Completed Exercises:
+<span id="counter">0</span>
+</div>
+
+<button onclick="resetProgress()">
+Reset Progress
+</button>
+
+<div class="card">
+
+<h2>BMI Calculator</h2>
+
+<input
+type="number"
+id="weight"
+placeholder="Weight (kg)">
+
+<input
+type="number"
+id="height"
+placeholder="Height (cm)">
+
+<button onclick="calculateBMI()">
+Calculate BMI
+</button>
+
+<div
+id="bmiResult"
+class="result">
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Calories Calculator</h2>
+
+<input
+type="number"
+id="cWeight"
+placeholder="Weight">
+
+<input
+type="number"
+id="age"
+placeholder="Age">
+
+<button onclick="calculateCalories()">
+Calculate Calories
+</button>
+
+<div
+id="caloriesResult"
+class="result">
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Select Level</h2>
+
+<select
+id="level"
+onchange="showProgram()">
+
+<option
+value="beginner">
+Beginner
+</option>
+
+<option
+value="intermediate">
+Intermediate
+</option>
+
+<option
+value="advanced">
+Advanced
+</option>
+
+</select>
+
+</div>
+
+<div id="program"></div>
+
+<div class="card">
+
+<h2>🥗 Cutting Meal Plan</h2>
+
+<table>
+
+<tr>
+<th>Meal</th>
+<th>Food</th>
+</tr>
+
+<tr>
+<td>Breakfast</td>
+<td>
+4 Eggs + Oats + Banana
+</td>
+</tr>
+
+<tr>
+<td>Snack</td>
+<td>
+Greek Yogurt
+</td>
+</tr>
+
+<tr>
+<td>Lunch</td>
+<td>
+200g Chicken + Rice
+</td>
+</tr>
+
+<tr>
+<td>Pre Workout</td>
+<td>
+Coffee + Banana
+</td>
+</tr>
+
+<tr>
+<td>Dinner</td>
+<td>
+Tuna + Salad
+</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>🔥 Warm-Up Routine</h2>
+
+<table>
+
+<tr>
+<th>Exercise</th>
+<th>Duration</th>
+</tr>
+
+<tr>
+<td>Walking</td>
+<td>5 Minutes</td>
+</tr>
+
+<tr>
+<td>Jump Rope</td>
+<td>2 Minutes</td>
+</tr>
+
+<tr>
+<td>Arm Circles</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Leg Swings</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Shoulder Rotations</td>
+<td>1 Minute</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>🧘 Stretching Routine</h2>
+
+<table>
+
+<tr>
+<th>Stretch</th>
+<th>Duration</th>
+</tr>
+
+<tr>
+<td>Chest Stretch</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Hamstring Stretch</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Quad Stretch</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Shoulder Stretch</td>
+<td>30 Seconds</td>
+</tr>
+
+<tr>
+<td>Hip Flexor Stretch</td>
+<td>30 Seconds</td>
+</tr>
+
+</table>
+
+</div>
+
+<script>
+    let completed =
+parseInt(
+localStorage.getItem("completed")
+) || 0;
+
+window.onload = function(){
+
+document.getElementById("counter").innerHTML =
+completed;
+
+const savedLevel =
+localStorage.getItem("level");
+
+if(savedLevel){
+
+document.getElementById("level").value =
+savedLevel;
+
+}
+
+showProgram();
+
+};
+
+function calculateBMI(){
+
+let weight =
+document.getElementById("weight").value;
+
+let height =
+document.getElementById("height").value / 100;
+
+let bmi =
+(weight / (height * height)).toFixed(1);
+
+localStorage.setItem("lastBMI", bmi);
+
+document.getElementById("bmiResult").innerHTML =
+"Your BMI = " + bmi;
+
+}
+
+function calculateCalories(){
+
+let weight =
+document.getElementById("cWeight").value;
+
+let maintenance =
+weight * 24;
+
+let cutting =
+maintenance - 500;
+
+document.getElementById("caloriesResult").innerHTML =
+"Maintenance Calories: "
++ maintenance +
+"<br><br>Cutting Calories: "
++ cutting;
+
+}
+
+function completeExercise(btn){
+
+if(!btn.classList.contains("completed")){
+
+btn.classList.add("completed");
+
+btn.innerHTML =
+"✅ Completed";
+
+completed++;
+
+localStorage.setItem(
+"completed",
+completed
+);
+
+document.getElementById("counter").innerHTML =
+completed;
+
+}
+
+}
+
+function resetProgress(){
+
+localStorage.removeItem("completed");
+
+completed = 0;
+
+document.getElementById("counter").innerHTML =
+0;
+
+location.reload();
+
+}
+
+function showProgram(){
+
+let level =
+document.getElementById("level").value;
+
+localStorage.setItem(
+"level",
+level
+);
+
+let workout = "";
+
+if(level === "beginner"){
+
+workout = `
+<div class="card">
+
+<h2>🏋 Beginner Workout</h2>
+
+<table>
+
+<tr>
+<th>Day</th>
+<th>Workout</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>Day 1</td>
+<td>
+
+<b>Chest & Triceps</b><br><br>
+
+☑ Bench Press - 4 x 10<br>
+☑ Incline Dumbbell Press - 4 x 10<br>
+☑ Chest Fly - 3 x 12<br>
+☑ Push Ups - 3 x Failure<br>
+☑ Triceps Pushdown - 4 x 12<br>
+☑ Overhead Extension - 3 x 12<br>
+
+</td>
+
+<td>
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+</td>
+</tr>
+
+<tr>
+<td>Day 2</td>
+
+<td>
+
+<b>Back & Biceps</b><br><br>
+
+☑ Pull Ups - 4 x Max<br>
+☑ Lat Pulldown - 4 x 12<br>
+☑ Barbell Row - 4 x 10<br>
+☑ Cable Row - 3 x 12<br>
+☑ Barbell Curl - 4 x 12<br>
+☑ Hammer Curl - 3 x 12<br>
+
+</td>
+
+<td>
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+</td>
+</tr>
+
+
+<tr>
+<td>Day 3</td>
+<td>Rest + Cardio</td>
+<td>
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete
+</button>
+</td>
+</tr>
+
+<tr>
+<td>Day 4</td>
+
+<td>
+
+<b>Shoulders</b><br><br>
+
+☑ Shoulder Press - 4 x 10<br>
+☑ Lateral Raise - 4 x 15<br>
+☑ Front Raise - 3 x 12<br>
+☑ Rear Delt Fly - 3 x 15<br>
+☑ Shrugs - 4 x 15<br>
+
+</td>
+
+<td>
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+</td>
+</tr>
+
+<tr>
+<td>Day 5</td>
+
+<td>
+
+<b>Legs</b><br><br>
+
+☑ Squat - 4 x 10<br>
+☑ Leg Press - 4 x 12<br>
+☑ Leg Extension - 3 x 15<br>
+☑ Leg Curl - 3 x 15<br>
+☑ Romanian Deadlift - 3 x 10<br>
+☑ Standing Calf Raises - 4 x 20<br>
+
+</td>
+
+<td>
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+</td>
+</tr>
+
+</table>
+
+</div>
+`;
+}
+else if(level === "intermediate"){
+
+workout = `
+<div class="card">
+
+<h2>🔥 Intermediate Program</h2>
+
+<table>
+
+<tr>
+<th>Day</th>
+<th>Workout Details</th>
+</tr>
+
+<tr>
+<td>Day 1</td>
+<td>
+Chest + Triceps<br><br>
+
+Bench Press 4x10<br>
+Incline Press 4x10<br>
+Chest Fly 3x12<br>
+Dips 3x12<br>
+Pushdown 4x12<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 2</td>
+<td>
+Back + Biceps<br><br>
+
+Lat Pulldown 4x12<br>
+Barbell Row 4x10<br>
+Cable Row 3x12<br>
+Barbell Curl 4x12<br>
+Hammer Curl 3x12<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 3</td>
+<td>
+Cardio + Stretching<br><br>
+
+Walking 30 min<br>
+Mobility Work<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 4</td>
+<td>
+Shoulders<br><br>
+
+Shoulder Press 4x12<br>
+Lateral Raise 4x15<br>
+Rear Delt Fly 3x15<br>
+Shrugs 4x15<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 5</td>
+<td>
+Legs<br><br>
+
+Squat 4x10<br>
+Leg Press 4x12<br>
+Leg Curl 3x15<br>
+Calf Raises 4x20<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+</table>
+
+</div>
+`;
+}
+
+else{
+
+workout = `
+<div class="card">
+
+<h2>🏆 Advanced Program</h2>
+
+<table>
+
+<tr>
+<th>Day</th>
+<th>Workout Details</th>
+</tr>
+
+<tr>
+<td>Day 1</td>
+<td>
+
+Upper Body Heavy<br><br>
+
+Bench Press 5x5<br>
+Pull Ups 5xMax<br>
+Overhead Press 5x8<br>
+Barbell Row 5x8<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 2</td>
+<td>
+
+Legs Heavy<br><br>
+
+Squat 5x5<br>
+Romanian Deadlift 5x8<br>
+Leg Press 4x12<br>
+Calves 5x20<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 3</td>
+<td>
+
+Push Day<br><br>
+
+Bench Press<br>
+Incline Press<br>
+Chest Fly<br>
+Dips<br>
+Pushdown<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 4</td>
+<td>
+
+Pull Day<br><br>
+
+Deadlift<br>
+Pull Ups<br>
+Pulldown<br>
+Cable Row<br>
+Biceps Curl<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 5</td>
+<td>
+
+Leg Day<br><br>
+
+Squat<br>
+Front Squat<br>
+Leg Press<br>
+Leg Curl<br>
+Calves<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+<tr>
+<td>Day 6</td>
+<td>
+
+Upper Body Pump<br><br>
+
+Incline DB Press<br>
+Machine Row<br>
+Lateral Raise<br>
+Curl<br>
+Pushdown<br>
+
+<button class="complete-btn"
+onclick="completeExercise(this)">
+Complete Day
+</button>
+
+</td>
+</tr>
+
+</table>
+
+</div>
+`;
+}
+
+document.getElementById("program").innerHTML =
+workout;
+
+}
+</script>
+
+</body>
+</html>
